@@ -1,86 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Define a versão do XML e a codificação de caracteres -->
+<!-- Define que este arquivo é um documento XML, com codificação UTF-8 -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-<!-- Define o projeto Maven com schema XML correspondente -->
+<!-- Bloco raiz do projeto Maven.
+     Define o namespace XML e a URL do schema XML do modelo de projeto Maven (POM - Project Object Model). -->
 
     <modelVersion>4.0.0</modelVersion>
-    <!-- Versão do modelo POM utilizada pelo Maven -->
+    <!-- Define a versão do modelo POM que está sendo utilizado -->
 
     <parent>
-        <!-- Define que este projeto herda configurações do Spring Boot Starter Parent -->
         <groupId>org.springframework.boot</groupId>
-        <!-- Grupo do Spring Boot -->
+        <!-- Grupo do artefato pai: Spring Boot -->
+
         <artifactId>spring-boot-starter-parent</artifactId>
-        <!-- Artefato pai do Spring Boot com configurações padrão -->
+        <!-- Artefato pai: configurações padrão para projetos Spring Boot -->
+
         <version>3.4.4</version>
-        <!-- Versão específica do Spring Boot utilizada -->
+        <!-- Versão do Spring Boot utilizada neste projeto -->
+
         <relativePath/>
-        <!-- Maven busca no repositório remoto, sem caminho relativo local -->
+        <!-- O Maven buscará o artefato pai diretamente do repositório, sem usar caminho relativo local -->
     </parent>
 
     <groupId>com.origemacai</groupId>
-    <!-- Define o grupo principal da aplicação (pacote base) -->
+    <!-- Identificador do grupo do projeto (base para o pacote Java principal) -->
+
     <artifactId>origem-acai</artifactId>
-    <!-- Nome único do artefato/projeto -->
+    <!-- Nome único do artefato (nome da aplicação/projeto) -->
+
     <version>0.0.1-SNAPSHOT</version>
-    <!-- Versão de desenvolvimento -->
+    <!-- Versão atual do projeto (SNAPSHOT indica que está em desenvolvimento) -->
+
     <name>Origem Açaí</name>
-    <!-- Nome do projeto -->
+    <!-- Nome amigável do projeto -->
+
     <description>Sistema de gestão para loja de açaí</description>
-    <!-- Descrição breve do projeto -->
+    <!-- Descrição resumida da finalidade do projeto -->
 
     <properties>
-        <!-- Define propriedades reutilizáveis no projeto -->
+        <!-- Bloco onde definimos propriedades reutilizáveis em todo o projeto -->
 
         <java.version>17</java.version>
-        <!-- Define a versão do Java usada no Spring Boot -->
+        <!-- Define a versão do Java a ser usada na compilação (Java 17) -->
 
         <javafx.version>17.0.2</javafx.version>
-        <!-- Define a versão do JavaFX usada no projeto -->
+        <!-- Define a versão da biblioteca JavaFX usada no projeto -->
 
         <maven.compiler.release>17</maven.compiler.release>
-        <!-- Define que o Maven deve compilar o projeto com suporte ao Java 17 -->
+        <!-- Garante que o Maven compile o código com as APIs do Java 17 -->
     </properties>
 
     <dependencies>
-        <!-- Bloco onde todas as bibliotecas externas são declaradas -->
+        <!-- Bloco onde são declaradas todas as dependências (bibliotecas externas) usadas no projeto -->
 
-        <!-- Spring Boot Starter Web: permite criar APIs REST -->
+        <!-- Spring Web: permite criação de APIs REST com facilidade -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Spring Boot Starter Data JPA: permite trabalhar com banco de dados via ORM -->
+        <!-- Spring Data JPA: integração com banco de dados via ORM (Hibernate) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- MySQL Driver: permite conectar com bancos de dados MySQL -->
+        <!-- MySQL Connector: driver JDBC para conexão com banco MySQL -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <!-- JavaFX Controls: componentes visuais (botões, labels, etc.) -->
+        <!-- JavaFX Controls: fornece os componentes visuais básicos (botões, campos, etc.) -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
         </dependency>
 
-        <!-- JavaFX FXML: permite uso de arquivos .fxml para interfaces gráficas -->
+        <!-- JavaFX FXML: suporte ao uso de arquivos FXML para criação de interfaces gráficas -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
         </dependency>
 
-        <!-- Spring Boot Starter Test: ferramentas para testes com JUnit -->
+        <!-- Biblioteca PDFBox: permite gerar documentos PDF de forma programática -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.29</version>
+        </dependency>
+
+        <!-- Spring Boot Starter Test: conjunto de ferramentas para testes automatizados -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -89,34 +104,36 @@
     </dependencies>
 
     <build>
-        <!-- Bloco responsável pela configuração de compilação do projeto -->
+        <!-- Bloco responsável por configurar o processo de construção (build) do projeto -->
 
         <plugins>
-            <!-- Lista de plugins Maven utilizados na build -->
+            <!-- Lista de plugins utilizados durante a build com Maven -->
 
-            <!-- Plugin padrão do Spring Boot para empacotar e executar a aplicação -->
+            <!-- Plugin do Spring Boot: empacota o projeto como aplicação executável -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-            <!-- Plugin Maven para compatibilidade de recursos (opcional, mas recomendado) -->
+            <!-- Plugin de recursos do Maven: otimiza o processamento de arquivos resources -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.2.0</version>
             </plugin>
 
-            <!-- Plugin JavaFX: permite rodar o JavaFX com Maven -->
+            <!-- Plugin JavaFX: permite executar aplicações JavaFX via Maven -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
                     <mainClass>com.origemacai.view.TelaInicial</mainClass>
-                    <!-- Define a classe principal que inicializa o JavaFX -->
+                    <!-- Define a classe principal com o método `main()` que inicia o JavaFX -->
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
 </project>
+

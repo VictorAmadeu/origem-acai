@@ -1,84 +1,76 @@
 // Define o pacote onde esta classe está localizada
 package com.origemacai.view;
 
-// Importa a classe de utilitário para controle de idioma
+// Importa a classe de utilitário para controle de idioma (Singleton)
 import com.origemacai.util.Idioma;
 
-// Importa a classe principal do JavaFX para criar uma aplicação gráfica
+// Importa classes do JavaFX necessárias para construção da interface
 import javafx.application.Application;
-
-// Importa a classe para definir espaçamentos internos (padding)
 import javafx.geometry.Insets;
-
-// Importa os componentes gráficos que serão usados na tela
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-
-// Importa o layout em grade para organizar os elementos
 import javafx.scene.layout.GridPane;
-
-// Importa a janela principal (Stage)
 import javafx.stage.Stage;
 
-// Classe principal da interface de login que estende Application do JavaFX
+// Importa a tela que será aberta após o login
+import com.origemacai.view.TelaCadastroProduto;
+
+// Classe que representa a tela de login. Estende Application do JavaFX.
 public class TelaLogin extends Application {
 
-    // Método que é executado ao iniciar a aplicação
+    // Método principal chamado ao iniciar a aplicação
     @Override
     public void start(Stage primaryStage) {
 
-        // Obtém a instância atual do idioma (singleton)
+        // Obtém o idioma atual selecionado (singleton)
         Idioma idioma = Idioma.getInstance();
 
         // Cria o ComboBox (menu suspenso) com as opções de idioma
         ComboBox<String> selecaoIdioma = new ComboBox<>();
+        selecaoIdioma.getItems().addAll("Português", "Español");  // Adiciona as opções
+        selecaoIdioma.setValue("Português");                       // Define valor padrão
 
-        // Adiciona as opções de idioma ao ComboBox
-        selecaoIdioma.getItems().addAll("Português", "Español");
+        // Cria rótulos com os textos traduzidos conforme o idioma
+        Label labelIdioma = new Label(idioma.get("label.idioma"));
+        Label labelUsuario = new Label(idioma.get("label.usuario"));
+        Label labelSenha = new Label(idioma.get("label.senha"));
 
-        // Define o idioma padrão como "Português"
-        selecaoIdioma.setValue("Português");
+        // Cria campos de entrada de texto
+        TextField campoUsuario = new TextField();                  // Campo para nome de usuário
+        PasswordField campoSenha = new PasswordField();            // Campo para senha
+        Button botaoEntrar = new Button(idioma.get("botao.entrar")); // Botão "Entrar"
 
-        // Cria os componentes de texto (rótulos e campos) com base no idioma atual
-        Label labelIdioma = new Label(idioma.get("label.idioma"));           // "Idioma"
-        Label labelUsuario = new Label(idioma.get("label.usuario"));         // "Usuário" ou "Usuario"
-        Label labelSenha = new Label(idioma.get("label.senha"));             // "Senha" ou "Contraseña"
-        TextField campoUsuario = new TextField();                            // Campo de entrada para o usuário
-        PasswordField campoSenha = new PasswordField();                      // Campo de entrada para senha
-        Button botaoEntrar = new Button(idioma.get("botao.entrar"));         // Botão de login: "Entrar"
-
-        // Adiciona um evento que detecta quando o usuário muda o idioma no ComboBox
+        // Evento que atualiza os textos quando o idioma é alterado no ComboBox
         selecaoIdioma.setOnAction(event -> {
-            // Captura o idioma selecionado pelo usuário
             String idiomaSelecionado = selecaoIdioma.getValue();
 
-            // Atualiza o idioma global com base na escolha
             if (idiomaSelecionado.equals("Português")) {
-                idioma.setLocale("pt", "BR");
-            } else if (idiomaSelecionado.equals("Español")) {
-                idioma.setLocale("es", "ES");
+                idioma.setLocale("pt", "BR");  // Define locale para português
+            } else {
+                idioma.setLocale("es", "ES");  // Define locale para espanhol
             }
 
-            // Atualiza os textos visíveis com base no novo idioma
-            labelIdioma.setText(idioma.get("label.idioma"));            // Atualiza rótulo "Idioma"
-            labelUsuario.setText(idioma.get("label.usuario"));          // Atualiza rótulo "Usuário"
-            labelSenha.setText(idioma.get("label.senha"));              // Atualiza rótulo "Senha"
-            botaoEntrar.setText(idioma.get("botao.entrar"));            // Atualiza botão "Entrar"
+            // Atualiza os textos visíveis na interface
+            labelIdioma.setText(idioma.get("label.idioma"));
+            labelUsuario.setText(idioma.get("label.usuario"));
+            labelSenha.setText(idioma.get("label.senha"));
+            botaoEntrar.setText(idioma.get("botao.entrar"));
         });
 
-        // Cria o layout em grade (GradePane) para organizar os componentes
+        // Evento do botão "Entrar" → abre a tela de cadastro
+        botaoEntrar.setOnAction(e -> {
+            Stage telaCadastro = new Stage();                      // Cria nova janela
+            new TelaCadastroProduto().start(telaCadastro);         // Abre a tela de cadastro
+            primaryStage.hide();                                   // Oculta a tela de login
+        });
+
+        // Cria um layout em grade e configura o espaçamento
         GridPane layout = new GridPane();
-
-        // Define o espaçamento interno do layout (padding)
         layout.setPadding(new Insets(20));
-
-        // Define o espaçamento vertical entre as linhas
         layout.setVgap(10);
-
-        // Define o espaçamento horizontal entre as colunas
         layout.setHgap(10);
 
-        // Adiciona os componentes ao layout com suas respectivas posições (coluna, linha)
+        // Adiciona os componentes ao layout (coluna, linha)
         layout.add(labelIdioma, 0, 0);
         layout.add(selecaoIdioma, 1, 0);
         layout.add(labelUsuario, 0, 1);
@@ -87,22 +79,17 @@ public class TelaLogin extends Application {
         layout.add(campoSenha, 1, 2);
         layout.add(botaoEntrar, 1, 3);
 
-        // Cria uma cena com o layout e define seu tamanho
+        // Cria a cena com o layout e define o tamanho da janela
         Scene cena = new Scene(layout, 400, 250);
 
-        // Define o título da janela principal
+        // Define o título da janela e exibe a tela
         primaryStage.setTitle("Login - Origem Açaí");
-
-        // Define a cena principal da janela
         primaryStage.setScene(cena);
-
-        // Exibe a janela
         primaryStage.show();
     }
 
-    // Método principal que inicia a aplicação
+    // Método principal que inicia a aplicação JavaFX
     public static void main(String[] args) {
-        launch(args);  // Chama o método start()
+        launch(args);
     }
 }
-
