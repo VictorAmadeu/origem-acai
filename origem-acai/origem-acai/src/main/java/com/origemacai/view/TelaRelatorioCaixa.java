@@ -1,16 +1,17 @@
 // Pacote onde a classe está localizada
 package com.origemacai.view;
 
-// Importa a entidade Caixa com os dados de cada entrada/saída no caixa
+// Importa a entidade Caixa que contém os dados de cada movimentação (entrada/saída)
 import com.origemacai.model.Caixa;
 
-// Importa o serviço responsável por acessar os dados de caixa
+// Importa o serviço que fornece a lista de movimentações do caixa
 import com.origemacai.service.CaixaService;
 
-// Importa utilitário para exportação de PDF
+// Importa utilitário que exporta os dados em formato PDF
 import com.origemacai.util.PdfRelatorioUtil;
 
-// Importações do JavaFX para elementos gráficos
+// Importações necessárias do JavaFX para a interface gráfica
+import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -18,67 +19,70 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-// Importa classes utilitárias do Java
+// Importa lista do Java para armazenar os dados do relatório
 import java.util.List;
 
-// Define a classe que representa a tela de relatório de caixa
-public class TelaRelatorioCaixa {
+// Define a classe da tela de relatório de caixa como uma aplicação JavaFX
+public class TelaRelatorioCaixa extends Application {
 
-    // Declaração do serviço de caixa que será usado para buscar os dados
+    // Atributo para acessar os dados de movimentação do caixa
     private CaixaService caixaService;
 
-    // Construtor que recebe o serviço como parâmetro
-    public TelaRelatorioCaixa(CaixaService caixaService) {
-        this.caixaService = caixaService;
+    // Construtor padrão obrigatório para JavaFX e para instanciar via Dashboard
+    public TelaRelatorioCaixa() {
+        // Cria uma nova instância do serviço
+        this.caixaService = new CaixaService();
     }
 
-    // Método principal para exibir a tela
-    public void start() {
-        // Cria uma nova janela (Stage) para a tela de relatório
-        Stage stage = new Stage();
-        stage.setTitle("Relatório de Caixa");
+    // Método obrigatório do JavaFX chamado ao abrir esta tela
+    @Override
+    public void start(Stage primaryStage) {
+        // Define o título da janela
+        primaryStage.setTitle("Relatório de Caixa");
 
-        // Cria uma tabela visual para exibir os dados do caixa
+        // Cria uma tabela para exibir os dados
         TableView<Caixa> tabela = new TableView<>();
 
-        // Coluna para o tipo (ENTRADA/SAÍDA)
+        // Cria a coluna "Tipo" e vincula ao campo "tipo" da entidade Caixa
         TableColumn<Caixa, String> colTipo = new TableColumn<>("Tipo");
         colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
 
-        // Coluna para a descrição da movimentação
+        // Cria a coluna "Descrição" e vincula ao campo "descricao"
         TableColumn<Caixa, String> colDesc = new TableColumn<>("Descrição");
         colDesc.setCellValueFactory(new PropertyValueFactory<>("descricao"));
 
-        // Coluna para o valor, formatado com "R$"
+        // Cria a coluna "Valor" e formata o valor com "R$"
         TableColumn<Caixa, String> colValor = new TableColumn<>("Valor");
         colValor.setCellValueFactory(cellData ->
-            new javafx.beans.property.SimpleStringProperty("R$ " + cellData.getValue().getValor().toString()));
+            new javafx.beans.property.SimpleStringProperty("R$ " + cellData.getValue().getValor().toString())
+        );
 
-        // Coluna para a data e hora da movimentação
+        // Cria a coluna "Data" com o horário da movimentação
         TableColumn<Caixa, String> colData = new TableColumn<>("Data");
         colData.setCellValueFactory(cellData ->
-            new javafx.beans.property.SimpleStringProperty(cellData.getValue().getDataHora().toString()));
+            new javafx.beans.property.SimpleStringProperty(cellData.getValue().getDataHora().toString())
+        );
 
         // Adiciona todas as colunas à tabela
         tabela.getColumns().addAll(colTipo, colDesc, colValor, colData);
 
-        // Obtém todos os lançamentos do caixa usando o serviço
+        // Carrega os dados do serviço e insere na tabela
         List<Caixa> movimentos = caixaService.getTodosMovimentos();
         tabela.setItems(FXCollections.observableArrayList(movimentos));
 
-        // Cria botão para exportar o conteúdo da tabela para PDF
+        // Cria botão para exportar os dados da tabela para PDF
         Button btnExportarPDF = new Button("Exportar para PDF");
 
-        // Define a ação do botão ao ser clicado
+        // Define ação ao clicar no botão de exportação
         btnExportarPDF.setOnAction(e -> {
             try {
-                // Reutiliza os dados carregados na tabela
+                // Busca novamente os dados atualizados
                 List<Caixa> lista = caixaService.getTodosMovimentos();
 
-                // Chama o método que gera o PDF passando a lista e o nome do arquivo
+                // Chama utilitário que gera o PDF
                 PdfRelatorioUtil.gerarRelatorioCaixa(lista, "relatorio-caixa.pdf");
 
-                // Exibe alerta informando sucesso
+                // Alerta de sucesso
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Exportação");
                 alert.setHeaderText(null);
@@ -86,7 +90,7 @@ public class TelaRelatorioCaixa {
                 alert.showAndWait();
 
             } catch (Exception ex) {
-                // Se ocorrer erro, exibe alerta de erro com a mensagem
+                // Em caso de erro, mostra mensagem ao usuário
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Erro");
                 alert.setHeaderText(null);
@@ -95,14 +99,18 @@ public class TelaRelatorioCaixa {
             }
         });
 
-        // Cria um layout vertical para organizar os componentes
-        VBox layout = new VBox(10); // espaçamento vertical de 10px
-        layout.getChildren().addAll(tabela, btnExportarPDF); // adiciona tabela e botão
+        // Layout vertical com espaçamento entre elementos
+        VBox layout = new VBox(10); // 10px de espaçamento entre os itens
+        layout.getChildren().addAll(tabela, btnExportarPDF); // Adiciona a tabela e o botão no layout
 
-        // Define a cena da janela com o layout
-        stage.setScene(new Scene(layout, 600, 400));
+        // Cria a cena da janela com largura 600px e altura 400px
+        Scene scene = new Scene(layout, 600, 400);
+
+        // Define a cena no palco (janela)
+        primaryStage.setScene(scene);
 
         // Exibe a janela na tela
-        stage.show();
+        primaryStage.show();
     }
 }
+

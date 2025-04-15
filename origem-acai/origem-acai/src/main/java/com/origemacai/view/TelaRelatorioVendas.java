@@ -1,144 +1,122 @@
-package com.origemacai.view;
-// Define o pacote onde está localizada a classe. Isso é importante para a organização do projeto (padrão MVC).
+package com.origemacai.view; 
+// Define o pacote onde esta classe está localizada no projeto (padrão MVC).
 
-import com.origemacai.model.Venda;
-// Importa a classe Venda, que representa os dados de cada venda.
+// Importações de modelos, serviços e utilitários
+import com.origemacai.model.Venda; // Classe que representa os dados de uma venda.
+import com.origemacai.service.VendaService; // Serviço que fornece a lista de vendas.
+import com.origemacai.util.PdfRelatorioUtil; // Utilitário que gera o relatório PDF.
 
-import com.origemacai.service.VendaService;
-// Importa o serviço que fornece as vendas a serem exibidas.
+// Importações JavaFX para interface gráfica
+import javafx.application.Application; // Torna a classe uma aplicação JavaFX.
+import javafx.collections.FXCollections; // Usado para criar ObservableList a partir de List padrão.
+import javafx.scene.Scene; // Representa a tela do JavaFX.
+import javafx.scene.control.*; // Importa todos os controles (botões, tabelas, colunas, etc.).
+import javafx.scene.control.cell.PropertyValueFactory; // Facilita a associação de colunas com atributos.
+import javafx.scene.layout.VBox; // Layout vertical.
+import javafx.stage.Stage; // Janela (tela) principal.
 
-import com.origemacai.util.PdfRelatorioUtil;
-// Importa a classe utilitária que gera o PDF com o relatório de vendas.
+import java.util.List; // Permite trabalhar com listas de objetos.
 
-import javafx.collections.FXCollections;
-// Importa utilitários para converter listas Java em listas observáveis (usadas nas tabelas JavaFX).
+public class TelaRelatorioVendas extends Application {
+    // Classe pública que representa a tela de relatório de vendas, agora estendendo Application para funcionar com JavaFX.
 
-import javafx.scene.Scene;
-// Importa a classe que representa a janela de conteúdo do JavaFX.
+    private VendaService vendaService; 
+    // Serviço responsável por fornecer os dados de vendas. Será inicializado dentro do construtor.
 
-import javafx.scene.control.*;
-// Importa todos os controles (tabela, colunas, botões, alertas, etc.) de JavaFX.
-
-import javafx.scene.control.cell.PropertyValueFactory;
-// Importa a classe que facilita o preenchimento de colunas com valores de propriedades dos objetos.
-
-import javafx.scene.layout.VBox;
-// Importa o layout vertical VBox, usado para organizar os componentes na tela.
-
-import javafx.stage.Stage;
-// Importa a classe que representa uma nova janela (tela) no JavaFX.
-
-import java.util.List;
-// Importa a classe List para lidar com listas de objetos.
-
-public class TelaRelatorioVendas {
-    // Define a classe pública responsável pela visualização do relatório de vendas.
-
-    private VendaService vendaService;
-    // Declara a variável que armazenará a instância do serviço de vendas.
-
-    public TelaRelatorioVendas(VendaService vendaService) {
-        // Construtor da classe, que recebe o serviço como parâmetro.
-        this.vendaService = vendaService;
-        // Armazena o serviço para uso posterior na tela.
+    public TelaRelatorioVendas() {
+        // Construtor sem parâmetros, necessário para funcionar com JavaFX e com new TelaRelatorioVendas().
+        this.vendaService = new VendaService(); 
+        // Instancia o serviço manualmente (sem injeção de dependência).
     }
 
-    public void start() {
-        // Método que inicia a construção e exibição da tela de relatório.
+    @Override
+    public void start(Stage primaryStage) {
+        // Método obrigatório do JavaFX que constrói e exibe a interface da tela.
 
-        Stage stage = new Stage();
-        // Cria uma nova janela (tela) para o relatório.
-
-        stage.setTitle("Relatório de Vendas");
-        // Define o título da janela.
+        primaryStage.setTitle("Relatório de Vendas");
+        // Define o título da janela (exibido na barra superior).
 
         TableView<Venda> tabela = new TableView<>();
-        // Cria uma nova tabela que exibirá os dados das vendas.
+        // Cria a tabela que exibirá os dados de vendas.
 
+        // Cria a coluna ID e associa com a propriedade "id" da entidade Venda
         TableColumn<Venda, Long> colId = new TableColumn<>("ID");
-        // Cria a coluna "ID" do tipo Long.
-
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        // Diz à coluna para usar o valor da propriedade "id" de cada objeto Venda.
 
+        // Cria a coluna "Produto" que mostra o nome do produto relacionado à venda
         TableColumn<Venda, String> colProduto = new TableColumn<>("Produto");
-        // Cria a coluna "Produto" do tipo String.
-
         colProduto.setCellValueFactory(cellData ->
-            new javafx.beans.property.SimpleStringProperty(cellData.getValue().getProduto().getNome()));
-        // Usa expressão lambda para acessar o nome do produto dentro da entidade Venda.
+            new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getProduto().getNome()
+            )
+        );
+        // Expressão lambda que pega o nome do produto de dentro do objeto Venda.
 
+        // Cria a coluna "Quantidade" e associa com o atributo da venda
         TableColumn<Venda, Integer> colQtd = new TableColumn<>("Quantidade");
-        // Cria a coluna "Quantidade" do tipo Integer.
-
         colQtd.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
-        // Usa o campo "quantidade" diretamente da entidade Venda.
 
+        // Cria a coluna "Data" e formata a data/hora como texto
         TableColumn<Venda, String> colData = new TableColumn<>("Data");
-        // Cria a coluna "Data" para exibir a data da venda.
-
         colData.setCellValueFactory(cellData ->
-            new javafx.beans.property.SimpleStringProperty(cellData.getValue().getDataHora().toString()));
-        // Usa expressão lambda para converter a dataHora (LocalDateTime) em texto.
+            new javafx.beans.property.SimpleStringProperty(
+                cellData.getValue().getDataHora().toString()
+            )
+        );
 
+        // Adiciona todas as colunas à tabela
         tabela.getColumns().addAll(colId, colProduto, colQtd, colData);
-        // Adiciona todas as colunas criadas à tabela.
 
+        // Obtém a lista de vendas do serviço
         List<Venda> vendas = vendaService.listarTodas();
-        // Chama o método do serviço para obter todas as vendas cadastradas.
 
+        // Converte a lista normal para uma ObservableList e define como conteúdo da tabela
         tabela.setItems(FXCollections.observableArrayList(vendas));
-        // Converte a lista em uma ObservableList e define como conteúdo da tabela.
 
-        // -------------------------------------------
-        // IMPLEMENTAÇÃO DO BOTÃO DE EXPORTAÇÃO PARA PDF
-        // -------------------------------------------
+        // ----------------------------
+        // Botão de Exportação para PDF
+        // ----------------------------
 
         Button btnExportarPDF = new Button("Exportar para PDF");
-        // Cria o botão com o texto "Exportar para PDF".
+        // Cria o botão que permitirá exportar os dados da tabela.
 
         btnExportarPDF.setOnAction(e -> {
-            // Define a ação que será executada ao clicar no botão.
+            // Define a ação que ocorre ao clicar no botão
             try {
                 PdfRelatorioUtil.gerarRelatorioVendas(vendas, "relatorio-vendas.pdf");
-                // Chama o método utilitário para gerar o PDF passando a lista de vendas e o nome do arquivo.
+                // Gera o arquivo PDF com os dados da tabela, usando a classe utilitária
 
                 Alert alertaSucesso = new Alert(Alert.AlertType.INFORMATION);
-                // Cria um alerta de informação para feedback positivo.
-
                 alertaSucesso.setTitle("Exportação");
                 alertaSucesso.setHeaderText(null);
                 alertaSucesso.setContentText("PDF gerado com sucesso!");
                 alertaSucesso.showAndWait();
-                // Exibe o alerta.
+                // Exibe um alerta de sucesso para o usuário
 
             } catch (Exception ex) {
-                // Caso aconteça algum erro ao gerar o PDF:
+                // Caso ocorra erro na exportação
                 Alert alertaErro = new Alert(Alert.AlertType.ERROR);
-                // Cria um alerta de erro.
-
                 alertaErro.setTitle("Erro");
                 alertaErro.setHeaderText(null);
                 alertaErro.setContentText("Erro ao gerar PDF: " + ex.getMessage());
                 alertaErro.showAndWait();
-                // Exibe o alerta com a mensagem de erro.
+                // Exibe alerta de erro com a mensagem do problema
             }
         });
 
-        VBox layout = new VBox(10);
-        // Cria um layout vertical com espaçamento de 10 pixels entre os elementos.
+        // Layout vertical para organizar a tabela e o botão
+        VBox layout = new VBox(10); // Espaçamento de 10px entre os elementos
+        layout.getChildren().addAll(tabela, btnExportarPDF); // Adiciona tabela e botão ao layout
 
-        layout.getChildren().addAll(tabela, btnExportarPDF);
-        // Adiciona a tabela e o botão ao layout VBox.
+        // Cria a cena (área visível da tela) e define tamanho da janela
+        Scene scene = new Scene(layout, 600, 400);
 
-        Scene cena = new Scene(layout, 600, 400);
-        // Cria a cena JavaFX com o layout e define o tamanho da janela.
+        // Aplica a cena à janela principal
+        primaryStage.setScene(scene);
 
-        stage.setScene(cena);
-        // Define a cena na janela (Stage).
-
-        stage.show();
-        // Exibe a janela.
+        // Exibe a janela
+        primaryStage.show();
     }
 }
+
 
