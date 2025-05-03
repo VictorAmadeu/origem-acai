@@ -1,0 +1,42 @@
+/* Define o estilo para o rótulo com a classe "titulo" */
+.titulo {
+    /* Cor do texto: roxo escuro (cor institucional do açaí) */
+    -fx-text-fill: #4B0082;
+
+    /* Deixa o texto em negrito */
+    -fx-font-weight: bold;
+}
+
+/* Define o estilo base de todos os botões */
+.button {
+    /* Cor de fundo do botão: roxo escuro */
+    -fx-background-color: #4B0082;
+
+    /* Cor do texto do botão: branco */
+    -fx-text-fill: white;
+
+    /* Deixa o texto em negrito */
+    -fx-font-weight: bold;
+
+    /* Define espaçamento interno (padding) no botão:
+       cima = 8px, direita = 16px, baixo = 8px, esquerda = 16px */
+    -fx-padding: 8 16 8 16;
+
+    /* Arredonda os cantos do botão com raio de 5px */
+    -fx-background-radius: 5;
+}
+
+/* Define o estilo do botão quando o mouse passa por cima */
+.button:hover {
+    /* Cor de fundo muda para roxo mais claro ao passar o mouse */
+    -fx-background-color: #6a0dad;
+}
+
+/* Define estilo compartilhado para campos de texto e senha */
+.text-field, .password-field {
+    /* Arredonda as bordas dos campos */
+    -fx-background-radius: 5;
+
+    /* Define a cor da borda externa como cinza claro */
+    -fx-border-color: #ccc;
+}
