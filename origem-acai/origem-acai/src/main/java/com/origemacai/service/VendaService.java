@@ -32,65 +32,72 @@ import java.util.List;
 @Service
 public class VendaService {
 
-    // Injeta automaticamente o repositório de vendas (vendaRepository) — responsável por salvar e buscar vendas no banco
+    // Injeta automaticamente o repositório de vendas (vendaRepository)
     @Autowired
     private VendaRepository vendaRepository;
 
-    // Injeta automaticamente o repositório de produtos (produtoRepository) — utilizado para consultar e atualizar os produtos
+    // Injeta automaticamente o repositório de produtos (produtoRepository)
     @Autowired
     private ProdutoRepository produtoRepository;
 
-    // Injeta automaticamente o serviço de caixa (caixaService) — usado para registrar entradas de valores no sistema financeiro
+    // Injeta automaticamente o serviço de caixa (caixaService)
     @Autowired
     private CaixaService caixaService;
 
-    // Método público que registra uma nova venda, recebendo como parâmetros: ID do produto, quantidade e nome do cliente
+    // Método que registra uma nova venda com base no ID do produto, quantidade e cliente
     public Venda registrarVenda(Long produtoId, int quantidade, String cliente) {
-
-        // Busca o produto pelo ID no banco de dados
-        // Se o produto não for encontrado, lança uma exceção com a mensagem "Produto não encontrado"
         Produto produto = produtoRepository.findById(produtoId)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
 
-        // Validação: verifica se a quantidade informada é menor ou igual a zero
-        // Se for, lança uma exceção indicando que a quantidade deve ser maior que zero
         if (quantidade <= 0) {
             throw new IllegalArgumentException("Quantidade deve ser maior que zero.");
         }
 
-        // Verifica se o produto possui estoque suficiente para atender a quantidade da venda
-        // Se não tiver, lança uma exceção informando que o estoque é insuficiente
         if (produto.getQuantidadeEstoque() < quantidade) {
             throw new IllegalArgumentException("Estoque insuficiente para a venda.");
         }
 
-        // Calcula o valor total da venda multiplicando o preço do produto pela quantidade informada
         BigDecimal total = produto.getPreco().multiply(BigDecimal.valueOf(quantidade));
 
-        // Cria uma nova instância da entidade Venda com os dados fornecidos
         Venda venda = new Venda(produto, quantidade, total, cliente);
 
-        // Salva a venda no banco de dados utilizando o repositório
         vendaRepository.save(venda);
 
-        // Atualiza o estoque do produto, subtraindo a quantidade vendida
         produto.setQuantidadeEstoque(produto.getQuantidadeEstoque() - quantidade);
-
-        // Salva a nova quantidade do produto no banco de dados
         produtoRepository.save(produto);
 
-        // Registra uma nova entrada no caixa, informando o valor total da venda e a descrição
         caixaService.registrarEntrada(total, "Venda de produto: " + produto.getNome());
 
-        // Retorna o objeto Venda recém-criado, para que possa ser utilizado pela camada que chamou este método
         return venda;
     }
 
-    // Método público que retorna uma lista com todas as vendas cadastradas no banco de dados
+    // Método que retorna todas as vendas cadastradas
     public List<Venda> listarTodas() {
-        // Consulta todas as vendas armazenadas no banco usando o repositório e retorna a lista
         return vendaRepository.findAll();
     }
 
+    // Método que salva uma venda recebida como objeto completo
+    public void salvar(Venda venda) {
+        vendaRepository.save(venda);
+
+        Produto produto = venda.getProduto();
+        produto.setQuantidadeEstoque(produto.getQuantidadeEstoque() - venda.getQuantidade());
+        produtoRepository.save(produto);
+
+        caixaService.registrarEntrada(venda.getValorTotal(), "Venda direta: " + produto.getNome());
+    }
+
+    // ✅ NOVO MÉTODO ADICIONADO
+    // Método que exclui uma venda com base no ID
+    public void deletar(Long id) {
+        // Verifica se a venda existe no banco
+        Venda venda = vendaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Venda não encontrada"));
+
+        // (Opcional) Poderia reverter o estoque se desejado
+
+        // Remove a venda do banco de dados
+        vendaRepository.deleteById(id);
+    }
 }
 

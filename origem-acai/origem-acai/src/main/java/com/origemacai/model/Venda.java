@@ -83,6 +83,12 @@ public class Venda {
         return total;
     }
 
+    // ✅ MÉTODO ADICIONADO — Soluciona o erro de getValorTotal() não definido
+    public BigDecimal getValorTotal() {
+        return total;
+    }
+    // Este método alternativo retorna o mesmo que getTotal(), mas com o nome esperado pela classe VendaService.
+
     // Getter para o nome do cliente
     public String getCliente() {
         return cliente;
@@ -114,4 +120,3 @@ public class Venda {
         this.cliente = cliente;
     }
 }
-
