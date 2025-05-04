@@ -1,0 +1,58 @@
+.root {
+    -fx-background-color: #f9f9f9;
+    -fx-padding: 20;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+.table-view {
+    -fx-border-color: #ccc;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-table-cell-border-color: #e0e0e0;
+    -fx-selection-bar: #cce5ff;
+    -fx-selection-bar-non-focused: #cce5ff88;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #e9ecef;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-border-color: #ddd;
+}
+
+.table-view .table-cell {
+    -fx-padding: 0 10px;
+}
+
+.table-view .table-cell:nth-child(1), /* ID */
+.table-view .table-cell:nth-child(4), /* Estoque */
+.table-view .table-cell:nth-child(5) { /* Ações */
+    -fx-alignment: CENTER;
+}
+
+.table-view .table-cell:nth-child(2), /* Nome */
+.table-view .table-cell:nth-child(3) { /* Tipo */
+    -fx-alignment: CENTER-LEFT;
+}
+
+.button {
+    -fx-padding: 5 12;
+    -fx-background-color: transparent;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 4;
+}
+
+.button:hover {
+    -fx-background-color: #f0f0f0;
+}
+
+#exportar-btn {
+    -fx-font-weight: bold;
+    -fx-border-color: #28a745;
+    -fx-text-fill: #28a745;
+}
+
+#exportar-btn:hover {
+    -fx-background-color: #e6f5ec;
+}

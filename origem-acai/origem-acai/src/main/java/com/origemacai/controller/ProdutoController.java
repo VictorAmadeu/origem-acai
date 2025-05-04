@@ -56,7 +56,7 @@ public class ProdutoController {
     // Remove um produto pelo ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        produtoService.deletar(id);
+    	produtoService.excluir(id);
         return ResponseEntity.noContent().build();
     }
 }
